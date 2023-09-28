@@ -4,6 +4,9 @@ using Mqtt.Client.AspNetCore.Services;
 using Mqtt.Client.AspNetCore.Settings;
 using MQTTnet.Client;
 using System;
+using System.Collections.Generic;
+using System.Runtime.ConstrainedExecution;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Mqtt.Client.AspNetCore.Extensions
 {
@@ -26,9 +29,28 @@ namespace Mqtt.Client.AspNetCore.Extensions
 
         private static IServiceCollection AddMqttClientServiceWithConfig(this IServiceCollection services, Action<MqttClientOptionsBuilder> configure)
         {
+            var currentDir = System.Environment.CurrentDirectory;
+            var caCert = X509Certificate.CreateFromCertFile($"{currentDir}\\ca_1.crt");
+            //var clientCert = new X509Certificate2(@"client-certificate.pfx", "ExportPasswordUsedWhenCreatingPfxFile");
+            //var clientKey = X509Certificate2.CreateFromCertFile($"{currentDir}\\client.key");
+            //var clientCert = X509Certificate.CreateFromCertFile($"{currentDir}\\client.crt");
+
+
+
             services.AddSingleton<MqttClientOptions>(serviceProvider =>
             {
-                var optionBuilder = new MqttClientOptionsBuilder();
+                var optionBuilder = new MqttClientOptionsBuilder()
+                           .WithTls(new MqttClientOptionsBuilderTlsParameters()
+                           {
+                               UseTls = true,
+                               SslProtocol = System.Security.Authentication.SslProtocols.Tls12,
+                               Certificates = new List<X509Certificate>()
+                               {
+                                    //clientCert, 
+                                   caCert, 
+                                   //clientKey
+                                }
+                           });
                 configure(optionBuilder);
                 return optionBuilder.Build();
             });

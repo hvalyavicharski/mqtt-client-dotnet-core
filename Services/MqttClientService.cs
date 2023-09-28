@@ -23,6 +23,9 @@ namespace Mqtt.Client.AspNetCore.Services
 
         private void ConfigureMqttClient()
         {
+            
+
+
             mqttClient.ConnectedAsync += HandleConnectedAsync;
             mqttClient.DisconnectedAsync += HandleDisconnectedAsync;
             mqttClient.ApplicationMessageReceivedAsync += HandleApplicationMessageReceivedAsync;
@@ -108,7 +111,7 @@ namespace Mqtt.Client.AspNetCore.Services
             {
                 var disconnectOption = new MqttClientDisconnectOptions
                 {
-                    Reason = MqttClientDisconnectReason.NormalDisconnection,
+                    Reason = MqttClientDisconnectReason.No,
                     ReasonString = "NormalDiconnection"
                 };
                 await mqttClient.DisconnectAsync(disconnectOption, cancellationToken);
